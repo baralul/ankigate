@@ -16,7 +16,7 @@
 **Requirement:** Run terminal as **Administrator**.
 
 ```bash
-python ankigate.py [-d] [-<minutes>] [-u]
+ankigate [-d] [-<minutes>] [-u]
 
 ```
 
