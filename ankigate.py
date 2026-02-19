@@ -21,9 +21,12 @@ def load_config():
         return json.load(f)
 
 def flush_dns():
-    """Clears Windows DNS cache to ensure block/unblock takes effect immediately."""
+    """Cleans the DNS cache and resets the resolver cache."""
+    # Standard flush
     subprocess.run(["ipconfig", "/flushdns"], capture_output=True, shell=True)
-    print("DNS Flushed. Access updated.")
+    # Register DNS forces the OS to re-read the hosts file immediately
+    subprocess.run(["ipconfig", "/registerdns"], capture_output=True, shell=True)
+    print("DNS Flushed and Registered. Access updated.")
 
 def get_review_count(url):
     """Pings AnkiConnect to get the number of reviewed cards."""
@@ -167,7 +170,10 @@ def main():
                     block_sites(config["WEBSITES"])
                     flush_dns()
                     last_count = get_review_count(config["ANKI_URL"])
-            time.sleep(1)
+            else:
+            # If we get None (When anki is likely syncing or closed it may become unresponsive)
+                pass
+            time.sleep(1.5)
     except KeyboardInterrupt:
         print("\n\nAnkigate closed. Sites remain blocked for focus!")
 
