@@ -61,13 +61,16 @@ def ensure_config_exists():
 
 # --- 3. LOGIC FUNCTIONS ---
 def block_sites(websites):
-    """Writes redirect lines to the hosts file."""
     with open(HOSTS_PATH, 'r+') as file:
         content = file.read()
         for site in websites:
-            if site not in content:
-                file.write(f"{REDIRECT} {site}\n")
-    print("\n--- SITES BLOCKED ---")
+            # Block IPv4
+            if f"127.0.0.1 {site}" not in content:
+                file.write(f"127.0.0.1 {site}\n")
+            # Block IPv6 - The browser often respects this even with DoH
+            if f"::1 {site}" not in content:
+                file.write(f"::1 {site}\n")
+
 
 def unblock_sites(websites, manual=False):
     """Removes the redirect lines from the hosts file."""
